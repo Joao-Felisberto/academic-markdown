@@ -52,7 +52,7 @@ These filters are optional and swappable, these are the ones that worked for me.
 
 Install the dependencies
 ```shell
-sudo pacman -S pandoc texlive-core python3-pip wget
+sudo pacman -S pandoc texlive-core python3-pip wget unzip
 ```
 
 If you wish the [pandoc-crossref](https://github.com/lierdakil/pandoc-crossref) filter, run
@@ -62,6 +62,9 @@ sudo pacman -S pandoc-crossref
 
 If you wish to use the [acro](https://ctan.org/pkg/acro) latex package, run
 ```shell
+# assuming these are run in the path where the document is
+# these instructions can be changed, 
+# you just need to put the package in a path searched by latex
 wget http://mirrors.ctan.org/macros/latex/contrib/translations/translations.sty
 ```
 
@@ -73,5 +76,62 @@ pip install --user panflute
 # these instructions can be changed, 
 # you just need to put the package in a path searched by latex
 wget https://mirrors.ctan.org/macros/latex/contrib/acro.zip
+unzip acro.zip
 cp acro/acro.sty .
 ```
+
+# Usage
+
+All external programs have documentation linked in this guide, so only brief illustrative examples will be provided here.
+The filters made by myself will have their full documentation in this section.
+
+**NOTE**: The [pandoc user guide](https://garrettgman.github.io/rmarkdown/authoring_pandoc_markdown.html) 
+has way more information on this, this section is only specific for this project.
+
+You can create a Makefile with some handy commands to aid in the compilation of the document
+
+```shell
+# Chain as many --filter as you want
+pdf:
+    pandoc file.md\
+	  -so out.pdf\
+	  --metadata-file <metadata-file>\
+	  --template <template-file>\
+	  --filter <filter-name>\
+```
+
+## Pandacro filter
+
+This filter is a wrapper for the latex acro package.
+
+To declare the acronyms add the following to the template or `header-includes`:
+
+```tex
+$if(acronyms)$
+    $for(acronyms)$
+        \DeclareAcronym{$acronyms.id$}{
+            short=$acronyms.short$,
+            long=$acronyms.long$
+        }
+    $endfor$
+$endif$
+```
+
+To add an acronym to the list you just have to add an entry to the metadata in the following format:
+
+```yml
+acronyms:
+  - id: the text to be replaced
+    short: the acronym's short form
+    long: the acronym's long form
+  - id: another acronym's id
+    short: ...
+```
+
+To add a filter you just have to write it's `id`, it will be replaced by `\ac{id}`.
+
+### TODO
+
+- Add support for more acronym types
+- Test for punctuation
+- Acro configuration via metadata
