@@ -4,13 +4,16 @@ from panflute import run_filter, stringify, Str, RawInline, Para
 
 
 def action(elem, doc):
-    if isinstance(elem, Str) and stringify(elem) == "lol" and isinstance(elem.parent, Para):
-        elem = RawInline("\\ac{" + "lol" + "}", format="latex")
+    acros = [stringify(ac['id']) for ac in doc.metadata["acronyms"]]
+
+    txt = stringify(elem)
+
+    if isinstance(elem, Str) and txt in acros and isinstance(elem.parent, Para):
+        elem = RawInline("\\ac{" + txt + "}", format="latex")
         return elem
 
 
 def main(doc=None):
-    main.test = "lol"
     return run_filter(action,
                       doc=doc)
 
