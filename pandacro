@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
+import os
 
-from panflute import run_filter, stringify, Str, RawInline, Para, Emph, Strong
+from panflute import run_filter, stringify, Str, RawInline, Para, Emph, Strong, Plain, Header
 
 
 def action(elem, doc):
@@ -18,11 +19,8 @@ def action(elem, doc):
             pos = txt[-1]
             txt = txt[:-1]
 
-    if isinstance(elem, Str):
-        with open("/home/me/PycharmProjects/pandoc-acronyms/log.txt", 'a') as f:
-            f.write(f"{stringify(elem)} {elem.parent.__class__.__name__}\n")
-
-    if isinstance(elem, Str) and txt in acros and isinstance(elem.parent, (Para, Strong, Emph)):
+    parents = (Para, Strong, Emph, Plain, Header)
+    if isinstance(elem, Str) and txt in acros and isinstance(elem.parent, parents):
         elem = RawInline(pre+"\\ac{" + txt + "}" + pos, format="latex")
         return elem
 
@@ -33,4 +31,5 @@ def main(doc=None):
 
 
 if __name__ == '__main__':
+    os.remove("/home/me/PycharmProjects/pandoc-acronyms/log.txt")
     main()
