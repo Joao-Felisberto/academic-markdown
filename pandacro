@@ -1,15 +1,29 @@
 #!/usr/bin/env python3
 
-from panflute import run_filter, stringify, Str, RawInline, Para
+from panflute import run_filter, stringify, Str, RawInline, Para, Emph, Strong
 
 
 def action(elem, doc):
     acros = [stringify(ac['id']) for ac in doc.metadata["acronyms"]]
 
     txt = stringify(elem)
+    pre = ""
+    pos = ""
 
-    if isinstance(elem, Str) and txt in acros and isinstance(elem.parent, Para):
-        elem = RawInline("\\ac{" + txt + "}", format="latex")
+    if len(txt) > 1 and txt not in acros:
+        if not txt[0].isalnum(): # in ('(', '-'):
+            pre = txt[0]
+            txt = txt[1:]
+        if not txt[-1].isalnum(): # in (')', ',', '.', ':', '-'):
+            pos = txt[-1]
+            txt = txt[:-1]
+
+    if isinstance(elem, Str):
+        with open("/home/me/PycharmProjects/pandoc-acronyms/log.txt", 'a') as f:
+            f.write(f"{stringify(elem)} {elem.parent.__class__.__name__}\n")
+
+    if isinstance(elem, Str) and txt in acros and isinstance(elem.parent, (Para, Strong, Emph)):
+        elem = RawInline(pre+"\\ac{" + txt + "}" + pos, format="latex")
         return elem
 
 
