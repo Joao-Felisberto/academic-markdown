@@ -12,16 +12,16 @@ def action(elem, doc):
     pos = ""
 
     if len(txt) > 1 and txt not in acros:
-        if not txt[0].isalnum(): # in ('(', '-'):
+        if not txt[0].isalnum():  # in ('(', '-'):
             pre = txt[0]
             txt = txt[1:]
-        if not txt[-1].isalnum(): # in (')', ',', '.', ':', '-'):
+        if not txt[-1].isalnum():  # in (')', ',', '.', ':', '-'):
             pos = txt[-1]
             txt = txt[:-1]
 
     parents = (Para, Strong, Emph, Plain, Header)
     if isinstance(elem, Str) and txt in acros and isinstance(elem.parent, parents):
-        elem = RawInline(pre+"\\ac{" + txt + "}" + pos, format="latex")
+        elem = RawInline(pre + "\\ac{" + txt + "}" + pos, format="latex")
         return elem
 
 
@@ -31,5 +31,4 @@ def main(doc=None):
 
 
 if __name__ == '__main__':
-    os.remove("/home/me/PycharmProjects/pandoc-acronyms/log.txt")
     main()

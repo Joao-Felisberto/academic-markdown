@@ -92,6 +92,13 @@ You can create a Makefile with some handy commands to aid in the compilation of 
 
 ```shell
 # Chain as many --filter as you want
+
+# For bibliography add these flags:
+#	--citeproc
+#	--bibliography <bibliography file>
+# NOTE: --citeproc must come before --filter pandoc-crossref
+
+# For referencing every type of element use --filter pandoc-crossref
 pdf:
     pandoc file.md\
 	  -so out.pdf\
@@ -104,7 +111,7 @@ pdf:
 
 This filter is a wrapper for the latex acro package.
 
-To declare the acronyms add the following to the template or `header-includes`:
+To declare the acronyms add the following to the template:
 
 ```tex
 $if(acronyms)$
@@ -114,6 +121,14 @@ $if(acronyms)$
             long=$acronyms.long$
         }
     $endfor$
+$endif$
+```
+
+Right before the `\end{document}` the acronyms should be printed:
+
+```tex
+$if(acronyms)$
+	\printacronyms
 $endif$
 ```
 
